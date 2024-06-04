@@ -1,0 +1,131 @@
+/* 全局樣式 */
+body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+}
+
+/* 頁面標題 */
+header h1 {
+    text-align: center;
+    font-size: 2.5em;
+    margin-bottom: 20px;
+}
+
+/* 區塊標題 */
+main h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* 表單容器 */
+.form-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 表單組 */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+    width: 100%;
+}
+
+/* 表單標籤 */
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+/* 表單輸入 */
+.form-group input {
+    padding: 8px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+}
+
+/* 按鈕 */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 50%;
+}
+
+/* 按鈕懸停效果 */
+button:hover {
+    background-color: #45a049;
+}
+
+/* 文字段落 */
+p {
+    text-align: center;
+}
+
+/* 鏈接 */
+a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+/* 鏈接懸停效果 */
+a:hover {
+    text-decoration: underline;
+}
+
+/* 錯誤消息 */
+.error-message {
+    color: red;
+    margin-top: 10px;
+}
+
+/* 表格 */
+#job-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+#job-table th, #job-table td {
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+#job-table th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+}
+
+#job-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* 刷新按鈕 */
+#refresh-button {
+    display: block;
+    margin: 0 auto;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#refresh-button:hover {
+    background-color: #45a049;
+}
