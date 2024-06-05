@@ -17,7 +17,23 @@ main h2 {
     margin-bottom: 20px;
 }
 
-/* 表單容器 */
+/* 文字段落 */
+p {
+    text-align: center;
+}
+
+/* 鏈接 */
+a {
+    color: #4CAF50;
+    text-decoration: none;
+}
+
+/* 鏈接懸停效果 */
+a:hover {
+    text-decoration: underline;
+}
+
+/* ----表單容器---- */
 .form-container {
     display: flex;
     flex-direction: column;
@@ -34,7 +50,7 @@ main h2 {
 .form-group {
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     width: 100%;
 }
 
@@ -45,45 +61,21 @@ main h2 {
 }
 
 /* 表單輸入 */
-.form-group input {
+.form-group input,
+.form-group textarea,
+.form-group select {
     padding: 8px;
     font-size: 16px;
     border: 1px solid #ccc;
     border-radius: 5px;
     width: 100%;
+    box-sizing: border-box; /* 確保填充不影響總寬度 */
+    margin-bottom: 20px; /* 減少輸入框與下一個標籤之間的間距 */
 }
 
-/* 按鈕 */
-button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    width: 50%;
-}
-
-/* 按鈕懸停效果 */
-button:hover {
-    background-color: #45a049;
-}
-
-/* 文字段落 */
-p {
-    text-align: center;
-}
-
-/* 鏈接 */
-a {
-    color: #4CAF50;
-    text-decoration: none;
-}
-
-/* 鏈接懸停效果 */
-a:hover {
-    text-decoration: underline;
+.form-group textarea {
+    height: 100px; /* 調整高度 */
+    resize: none; /* 禁用調整大小功能 */
 }
 
 /* 錯誤消息 */
@@ -113,7 +105,44 @@ a:hover {
     background-color: #f2f2f2;
 }
 
-/* 刷新按鈕 */
+/* ----按鈕---- */
+button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 50%;
+}
+
+/* 按鈕懸停效果 */
+button:hover {
+    background-color: #45a049;
+}
+
+.button-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 設置按鈕之間的間距 */
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    max-width: 40%;
+    width: 400px;
+}
+
+.left-up-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
 #refresh-button {
     display: block;
     margin: 0 auto;
@@ -125,7 +154,39 @@ a:hover {
     border-radius: 5px;
     cursor: pointer;
 }
+/* ----加載指示器----*/
+#loading-indicator {
+    text-align: center;
+    font-size: 1.5em;
+    color: #4CAF50;
+    margin-bottom: 20px;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+}
 
-#refresh-button:hover {
-    background-color: #45a049;
+#loading-indicator.show {
+    visibility: visible;
+    opacity: 1;
+}
+
+#search-input {
+    display: block;
+    margin: 0 auto 20px;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 80%;
+    max-width: 400px;
+}
+
+/* styles.css */
+.favorite-star {
+    cursor: pointer;
+    font-size: 24px;
+}
+
+.favorite-star.favorite {
+    color: gold;
 }

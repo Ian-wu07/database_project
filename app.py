@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request, redirect, url_for
 import mysql.connector
 
 app = Flask(__name__)
@@ -13,7 +13,7 @@ db_config = {
 
 @app.route('/')
 def index():
-    return render_template('login.html')
+   return redirect(url_for('login'))
 
 @app.route('/login')
 def login():
@@ -27,6 +27,57 @@ def home():
 def register():
     return render_template('register.html')
 
+@app.route('/resume')
+def resume():
+    return render_template('resume.html')
+
+@app.route('/api_save_favorite', methods=['POST'])
+def api_save_favorite():
+    try:
+        data = request.json
+        list_id = data.get('List_ID')
+        list_title = ''
+        favorite_jobs = data.get('Job_ID')
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("DELETE FROM List WHERE List_ID = %s", (list_id,))
+        cursor.execute("INSERT INTO List (List_ID, List_title, Job_ID) VALUES (%s, %s, %s)", 
+                       (list_id, list_title, favorite_jobs))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': 'Favorite list saved successfully'}), 200
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    
+@app.route('/api_submit_resume', methods=['POST'])
+def api_submit_resume():
+    try:
+        data = request.get_json()
+        resume_id = data.get('resume_id')
+        name = data.get('name')
+        sex = data.get('sex')
+        education = data.get('education')
+        phone = data.get('phone')
+        identify_id = data.get('identify_id')
+        birth = data.get('birth')
+        email = data.get('email')
+        experience = data.get('experience')
+        introduction = data.get('introduction')
+
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO Resume (Resume_ID, Name, Sex, Education, Phone, Identify_ID, Birth, Email, Experience, Introduction) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                       (resume_id, name, sex, education, phone, identify_id, birth, email, experience, introduction))
+        conn.commit()
+        cursor.close()
+        conn.close()
+
+        return jsonify({'message': 'Resume submitted successfully'})
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    
 @app.route('/api_register', methods=['POST'])
 def api_register():
     try:
@@ -69,7 +120,7 @@ def api_login():
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
     
-@app.route('/api_get_jobs')
+@app.route('/api_get_jobs', methods=['GET'])
 def api_get_jobs():
     try:
         conn = mysql.connector.connect(**db_config)
@@ -100,6 +151,27 @@ def api_get_jobs():
         return jsonify(jobs)
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
+
+@app.route('/api_get_user_info', methods=['GET'])
+def api_get_user_info():
+    try:
+        user_id = request.args.get('user_id')
+        
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT Name, Email, Phone FROM user WHERE User_ID = %s", (user_id,))
+        user_info = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if user_info:
+            return jsonify(user_info)
+        else:
+            return jsonify({'error': 'User not found'}), 404
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+    
+
 
 if __name__ == '__main__':
     app.run(debug=True)

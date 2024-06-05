@@ -23,7 +23,9 @@ document.addEventListener("DOMContentLoaded", function () {
             .then(response => {
                 if (response.ok) {
                     // 登录成功，跳转到其他页面
-                    response.json()
+                    response.json().then(data => {
+                        alert("註冊成功，請重新登入");
+                    });
                     window.location.href = '/login';
                 } else {
                     // 登录失败，显示错误消息
@@ -37,8 +39,4 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Error registering user: " + error.message);
             });
 	});
-    // 如果成功登錄，跳轉到其他頁面
-    
-    // 如果失敗，顯示錯誤訊息
-
 });

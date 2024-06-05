@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Resume</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+		<script src="{{ url_for('static', filename='resume.js') }}"></script>
+	</head>
+	<body>
+		<header>
+			<h1>求職打工系統</h1>
+            <div class="button-container">
+                <button onclick="logout()"class="left-up-button">Logout</button>
+                <button onclick="backtoHome()" class="left_up-button">back to home</button>    
+            </div>    
+		</header>
+		<main>
+			<h2>Resume Submission Form</h2>
+			<form id="resume-form" class="form-container">
+				<div class="form-group">
+                    <label for="resume_id">Resume ID:</label>
+                    <input type="text" id="resume_id" name="resume_id" required />
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" required />
+                    <label for="sex">Sex:</label>
+                    <select id="sex" name="sex">
+                        <option value="">Select</option>
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                        <option value="O">Other</option>
+                    </select>
+                    <label for="education">Education:</label>
+                    <select id="education" name="education">
+                        <option value="">Select</option>
+                        <option value="high_school">High School</option>
+                        <option value="bachelor">Bachelor's Degree</option>
+                        <option value="master">Master's Degree</option>
+                        <option value="doctorate">Doctorate Degree</option>
+                        <option value="doctorate">Other</option>
+                    </select>
+                    <label for="phone">Phone:</label>
+                    <input type="text" id="phone" name="phone" />
+                    <label for="identify_id">Identify ID:</label>
+                    <input type="text" id="identify_id" name="identify_id" />
+                    <label for="birth">Birth:</label>
+                    <input type="text" id="birth" name="birth" />
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" />
+                    <label for="experience">Experience:</label>
+                    <textarea id="experience" name="experience"></textarea>
+                    <label for="introduction">Introduction:</label>
+                    <textarea id="introduction" name="introduction"></textarea>
+                </div>
+				<button type="submit">Submit Resume</button>
+			</form>
+		</main>
+	</body>
+</html>
