@@ -4,11 +4,19 @@ import mysql.connector
 app = Flask(__name__)
 
 # 設置 MySQL 資料庫連接參數
+# db_config = {
+#     'user': 'root',
+#     'password': '519482673',
+#     'host': 'localhost',
+#     'database': 'team21'
+# }
+
 db_config = {
-    'user': 'root',
-    'password': '519482673',
-    'host': 'localhost',
-    'database': 'team21'
+    'user': 'team9',
+    'password': '2v7)5Qil1qD@ItqI',
+    'host': '140.122.184.129',
+    'port': '3310',
+    'database': 'team9'
 }
 
 @app.route('/')
@@ -108,7 +116,7 @@ def api_login():
 
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("SELECT USER_ID FROM user WHERE Name = %s AND Password = %s", (username, password))
+        cursor.execute("SELECT USER_ID FROM user WHERE User_Name = %s AND User_Password = %s", (username, password))
         results = cursor.fetchall()
         cursor.close()
         conn.close()
