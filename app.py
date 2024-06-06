@@ -6,7 +6,7 @@ app = Flask(__name__)
 # 設置 MySQL 資料庫連接參數
 db_config = {
     'user': 'root',
-    'password': '',
+    'password': '519482673',
     'host': 'localhost',
     'database': 'team21'
 }

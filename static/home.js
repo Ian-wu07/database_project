@@ -78,11 +78,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Function to filter job data based on search input
     function filterJobs() {
-        const query = searchInput.value.trim().toLowerCase();
+        const query = searchInput.value.trim();
         let filteredData;
-
+        
         if (query.includes(":")) {
-            const [key, value] = query.split(":").map((part) => part.trim().toLowerCase());
+            const [key, value] = query.split(":").map((part) => part.trim());
+            console.log(key,value)
             filteredData = jobData.filter((job) => (job[key] || "").toLowerCase().includes(value));
         } else {
             filteredData = jobData.filter((job) =>
