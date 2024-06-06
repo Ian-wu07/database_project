@@ -4,6 +4,7 @@
 		<title>Resume</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 		<script src="{{ url_for('static', filename='resume.js') }}"></script>
+        <script src="{{ url_for('static', filename='check_login.js') }}"></script>
 	</head>
 	<body>
 		<header>
@@ -15,6 +16,9 @@
 		</header>
 		<main>
 			<h2>Resume Submission Form</h2>
+            <div id="error-message" class="error-message" style="display: none;">
+				<a href="/login">請先登入</a>
+			</div>
 			<form id="resume-form" class="form-container">
 				<div class="form-group">
                     <label for="resume_id">Resume ID:</label>

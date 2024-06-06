@@ -81,7 +81,11 @@ a:hover {
 /* 錯誤消息 */
 .error-message {
     color: red;
+    font-size: 20px;
+    font-weight: bold;
     margin-top: 10px;
+    margin-bottom: 10px;
+    text-align: center;
 }
 
 /* 表格 */

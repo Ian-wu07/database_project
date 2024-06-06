@@ -1,0 +1,3 @@
+# Ignore Flask session files
+flask_session/
+connect.txt

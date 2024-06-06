@@ -1,16 +1,29 @@
-from flask import Flask, render_template, jsonify, request, redirect, url_for
+from flask import Flask, render_template, jsonify, request, redirect, url_for, session
 import mysql.connector
+from flask_session import Session
+import os
+import shutil
+from datetime import timedelta
 
 app = Flask(__name__)
 
-# 設置 MySQL 資料庫連接參數
-# db_config = {
-#     'user': 'root',
-#     'password': '519482673',
-#     'host': 'localhost',
-#     'database': 'team21'
-# }
+# 設置密鑰和 Session 配置
+app.secret_key = '123'
+app.config['SESSION_TYPE'] = 'filesystem'  # 使用文件系統來存儲 session
+app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=1)
+app.config['SESSION_FILE_DIR'] = './flask_session/'
+# 初始化 Session
+Session(app)
+def clear_session_folder():
+    folder = app.config['SESSION_FILE_DIR']
+    if os.path.exists(folder):
+        shutil.rmtree(folder)
+    os.makedirs(folder)
 
+# 在應用啟動時清除 session 文件夾
+clear_session_folder()
+
+# 設置 MySQL 資料庫連接參數
 db_config = {
     'user': 'team9',
     'password': '2v7)5Qil1qD@ItqI',
@@ -21,7 +34,7 @@ db_config = {
 
 @app.route('/')
 def index():
-   return redirect(url_for('login'))
+    return redirect(url_for('login'))
 
 @app.route('/login')
 def login():
@@ -29,7 +42,7 @@ def login():
 
 @app.route('/home')
 def home():
-    return render_template('home.html')
+        return render_template('home.html')
 
 @app.route('/register')
 def register():
@@ -37,15 +50,55 @@ def register():
 
 @app.route('/resume')
 def resume():
-    return render_template('resume.html')
+        return render_template('resume.html')
+
+@app.route('/api_check_login', methods=['GET'])
+def api_check_login():
+    print('session',session)
+    if 'user_id' in session:
+        return jsonify({'success': True, 'message': 'Already logged in'})
+    else:
+        return jsonify({'success': False, 'message': 'Not logged in'})
+    
+@app.route('/api_login', methods=['POST'])
+def api_login():
+    try:
+        data = request.get_json()
+        username = data.get('username')
+        password = data.get('password')
+
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT User_ID FROM user WHERE User_Name = %s AND User_Password = %s", (username, password))
+        user = cursor.fetchone()
+        cursor.close()
+        conn.close()
+
+        if user:
+            session['user_id'] = user['User_ID']  # 將 user_id 存入 session
+            # session.permanent = True
+            return jsonify({'message': 'Login successful'})
+        else:
+            return jsonify({'error': 'User not found or password incorrect'}), 401
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
+
+@app.route('/api_logout', methods=['POST'])
+def api_logout():
+    session.pop('user_id', None)
+    return jsonify({'message': 'Logout successful'})
 
 @app.route('/api_save_favorite', methods=['POST'])
 def api_save_favorite():
     try:
-        data = request.json
+        if 'user_id' not in session:
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        data = request.get_json()
         list_id = data.get('List_ID')
         list_title = ''
         favorite_jobs = data.get('Job_ID')
+        
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
         cursor.execute("DELETE FROM List WHERE List_ID = %s", (list_id,))
@@ -62,6 +115,9 @@ def api_save_favorite():
 @app.route('/api_submit_resume', methods=['POST'])
 def api_submit_resume():
     try:
+        if 'user_id' not in session:
+            return jsonify({'error': 'Unauthorized'}), 401
+        
         data = request.get_json()
         resume_id = data.get('resume_id')
         name = data.get('name')
@@ -98,7 +154,8 @@ def api_register():
         
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO user (User_ID, Name, Email, Password, Phone) VALUES (%s, %s, %s, %s, %s)", (user_id, name, email, password, phone))
+        cursor.execute("INSERT INTO user (User_ID, Name, Email, Password, Phone) VALUES (%s, %s, %s, %s, %s)", 
+                       (user_id, name, email, password, phone))
         conn.commit()
         cursor.close()
         conn.close()
@@ -107,30 +164,12 @@ def api_register():
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
 
-@app.route('/api_login', methods=['POST'])
-def api_login():
-    try:
-        data = request.get_json()
-        username = data.get('username')
-        password = data.get('password')
-
-        conn = mysql.connector.connect(**db_config)
-        cursor = conn.cursor()
-        cursor.execute("SELECT USER_ID FROM user WHERE User_Name = %s AND User_Password = %s", (username, password))
-        results = cursor.fetchall()
-        cursor.close()
-        conn.close()
-
-        if len(results) > 0:
-            return jsonify({'message': 'Login successful'})
-        else:
-            return jsonify({'error': 'user not found or password incorrect'}), 401
-    except mysql.connector.Error as err:
-        return jsonify({'error': str(err)}), 500
-    
 @app.route('/api_get_jobs', methods=['GET'])
 def api_get_jobs():
     try:
+        if 'user_id' not in session:
+            return jsonify({'error': 'Unauthorized'}), 401
+
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
         cursor.execute("SELECT * FROM Job")
@@ -163,7 +202,10 @@ def api_get_jobs():
 @app.route('/api_get_user_info', methods=['GET'])
 def api_get_user_info():
     try:
-        user_id = request.args.get('user_id')
+        if 'user_id' not in session:
+            return jsonify({'error': 'Unauthorized'}), 401
+        
+        user_id = session['user_id']
         
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
@@ -178,8 +220,6 @@ def api_get_user_info():
             return jsonify({'error': 'User not found'}), 404
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
-    
-
 
 if __name__ == '__main__':
     app.run(debug=True)

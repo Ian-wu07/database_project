@@ -13,11 +13,19 @@ const displayOrder = [
     "Hours"
 ];
 
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
+    const messageDiv = document.getElementById("error-message");
+    let log_In = await checkLogin();
+    if(!log_In){
+        messageDiv.style.display ="block"; 
+        return;
+    }
+        
     const refreshButton = document.getElementById("refresh-button");
     const jobTableBody = document.getElementById("job-table-body");
     const loadingIndicator = document.getElementById("loading-indicator");
     const searchInput = document.getElementById("search-input");
+
     let jobData = [];
     let favoriteJob=null;
 

@@ -1,4 +1,13 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async() => {
+    const messageDiv = document.getElementById("error-message");
+    const form = document.getElementById('resume-form');
+
+    let log_In = await checkLogin();
+    if(!log_In){
+        messageDiv.style.display ="block"; 
+        form.style.display = "none";
+        return;
+    }
     // 假設用戶ID是從某處獲得的，例如cookie或session
     const userId = 'user3'; // 替換為實際用戶ID的獲取方式
     
@@ -14,10 +23,6 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         })
         .catch(error => console.error('Error:', error));
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('resume-form');
 
     form.addEventListener('submit', function(event) {
         event.preventDefault(); // 防止表單提交

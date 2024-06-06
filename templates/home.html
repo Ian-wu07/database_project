@@ -1,44 +1,51 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-    <title>Job List</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <script src="{{ url_for('static', filename='home.js') }}"></script>
-</head>
-<body>
-    <header>
-        <h1>求職打工系統</h1>
-        <div class="button-container">
-            <button onclick="logout()"class="left-up-button">Logout</button>
-            <button onclick="gotoResume()" class="left_up-button">write resume</button>    
-        </div>
-        </header>
-    <main>
-        <h2>Job List</h2>
-        <input type="text" id="search-input" placeholder="Search by key:value(欄位:內容) or job title">
-        <div id="loading-indicator">Loading...</div>
-        <table border="5" id="job-table">
-            <thead>
-                <tr>
-                    <th>Job_ID</th>
-                    <th>Job_title</th>
-                    <th>Salary</th>
-                    <th>Content</th>
-                    <th>Address</th>
-                    <th>Payment</th>
-                    <th>Paydate</th>
-                    <th>Quantity</th>
-                    <th>Contact</th>
-                    <th>Phone</th>
-                    <th>Category</th>
-                    <th>Hours</th>
-                    <th>Favorite</th>
-                </tr>
-            </thead>
-            <tbody id="job-table-body"></tbody>
-        </table>
-        <button id="refresh-button">Refresh Data</button>
-        
-    </main>
-</body>
+	<head>
+		<title>Job List</title>
+		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+		<script src="{{ url_for('static', filename='home.js') }}"></script>
+        <script src="{{ url_for('static', filename='check_login.js') }}"></script>
+	</head>
+	<body>
+		<header>
+			<h1>求職打工系統</h1>
+			<div class="button-container">
+				<button onclick="logout()" class="left-up-button">Logout</button>
+				<button onclick="gotoResume()" class="left_up-button">write resume</button>
+			</div>
+		</header>
+		<main>
+			<h2>Job List</h2>
+			<div id="error-message" class="error-message" style="display: none;">
+				<a href="/login">請先登入</a>
+			</div>
+			<input
+				type="text"
+				id="search-input"
+				placeholder="Search by key:value(欄位:內容) or job title"
+			/>
+			<div id="loading-indicator">Loading...</div>
+			<table border="5" id="job-table">
+				<thead>
+					<tr>
+						<th>Job_ID</th>
+						<th>Job_title</th>
+						<th>Salary</th>
+						<th>Content</th>
+						<th>Address</th>
+						<th>Payment</th>
+						<th>Paydate</th>
+						<th>Quantity</th>
+						<th>Contact</th>
+						<th>Phone</th>
+						<th>Category</th>
+						<th>Hours</th>
+						<th>Favorite</th>
+					</tr>
+				</thead>
+				<tbody id="job-table-body"></tbody>
+			</table>
+			<button id="refresh-button">Refresh Data</button>
+		</main>
+	</body>
 </html>
