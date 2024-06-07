@@ -2,27 +2,30 @@
 document.addEventListener("DOMContentLoaded", function () {
 	document.getElementById("register-form").addEventListener("submit", function (event) {
 		event.preventDefault();
-		const user_id = document.getElementById("user_id").value;
 		const name = document.getElementById("name").value;
 		const email = document.getElementById("email").value;
 		const password = document.getElementById("password").value;
-		const phone = document.getElementById("phone").value;
+        const password_confirm = document.getElementById("password_confirm").value;
+        const errorMessage = document.getElementById('error-message');
+        if(password !== password_confirm){
+            errorMessage.textContent = "密碼不一致";
+            return;
+        }
 		fetch("/api_register", {
 			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify({
-				user_id: user_id,
 				name: name,
 				email: email,
 				password: password,
-				phone: phone,
 			}),
 		})
             .then(response => {
                 if (response.ok) {
                     // 登录成功，跳转到其他页面
+                    errorMessage.textContent ="";
                     response.json().then(data => {
                         alert("註冊成功，請重新登入");
                     });

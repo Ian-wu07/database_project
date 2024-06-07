@@ -1,3 +1,5 @@
 # Ignore Flask session files
 flask_session/
 connect.txt
+__pycache__/
+*.pyc

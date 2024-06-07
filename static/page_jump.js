@@ -12,3 +12,23 @@ function checkLogin() {
             });
     });
 }
+
+function logout() {
+	fetch("/api_logout")
+		.then((response) => response.json())
+		.then((data) => {
+			console.log("Successfully logged out:", data);
+			window.location.href = "/login";
+		})
+		.catch((error) => {
+			console.error("Error logging out:", error);
+		});
+}
+
+function gotoResume() {
+	window.location.href = "/resume";
+}
+
+function backtoHome() {
+	window.location.href = "/home";
+}

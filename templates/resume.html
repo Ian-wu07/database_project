@@ -4,7 +4,7 @@
 		<title>Resume</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 		<script src="{{ url_for('static', filename='resume.js') }}"></script>
-        <script src="{{ url_for('static', filename='check_login.js') }}"></script>
+        <script src="{{ url_for('static', filename='page_jump.js') }}"></script>
 	</head>
 	<body>
 		<header>
@@ -21,10 +21,8 @@
 			</div>
 			<form id="resume-form" class="form-container">
 				<div class="form-group">
-                    <label for="resume_id">Resume ID:</label>
-                    <input type="text" id="resume_id" name="resume_id" required />
                     <label for="name">Name:</label>
-                    <input type="text" id="name" name="name" required />
+                    <input type="text" id="user_name" name="user_name" readonly>
                     <label for="sex">Sex:</label>
                     <select id="sex" name="sex">
                         <option value="">Select</option>
@@ -49,8 +47,12 @@
                     <input type="text" id="birth" name="birth" />
                     <label for="email">Email:</label>
                     <input type="email" id="email" name="email" />
-                    <label for="experience">Experience:</label>
-                    <textarea id="experience" name="experience"></textarea>
+                    <label for="experience1">Experience1:</label>
+                    <input type="text" id="experience_1" name="experience_1"></input>
+                    <label for="experience2">Experience2:</label>
+                    <input type="text" id="experience_2" name="experience_2"></input>
+                    <label for="experience3">Experience3:</label>
+                    <input type="text" id="experience_3" name="experience_3"></input>
                     <label for="introduction">Introduction:</label>
                     <textarea id="introduction" name="introduction"></textarea>
                 </div>

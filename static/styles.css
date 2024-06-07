@@ -78,7 +78,12 @@ a:hover {
     resize: none; /* 禁用調整大小功能 */
 }
 
-/* 錯誤消息 */
+.form-group input[readonly], .form-group textarea[readonly], .form-group select[disabled] {
+    background-color: #f0f0f0;
+    color: #666;
+}
+
+/* ----錯誤消息---- */
 .error-message {
     color: red;
     font-size: 20px;
