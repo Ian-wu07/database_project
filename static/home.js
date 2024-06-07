@@ -1,5 +1,4 @@
 const displayOrder = [
-    "Job_ID",
     "Job_title",
     "Salary",
     "Content",
@@ -10,24 +9,25 @@ const displayOrder = [
     "Contact",
     "Phone",
     "Category",
-    "Hours"
+    "Hours",
+    "Job_State"
 ];
 
 document.addEventListener("DOMContentLoaded", async function () {
     const messageDiv = document.getElementById("error-message");
-    let log_In = await checkLogin();
-    if(!log_In){
-        messageDiv.style.display ="block"; 
+    let loggedIn = await checkLogin();
+    if (!loggedIn) {
+        messageDiv.style.display = "block";
         return;
     }
-        
+
     const refreshButton = document.getElementById("refresh-button");
     const jobTableBody = document.getElementById("job-table-body");
     const loadingIndicator = document.getElementById("loading-indicator");
     const searchInput = document.getElementById("search-input");
 
     let jobData = [];
-    let favoriteJob=null;
+    let favoriteJobs = new Set();
 
     // Function to fetch job data and update the table
     function fetchJobs() {
@@ -44,6 +44,8 @@ document.addEventListener("DOMContentLoaded", async function () {
             })
             .catch((error) => {
                 console.error("Error fetching jobs:", error);
+                messageDiv.textContent = "Error fetching jobs. Please try again later.";
+                messageDiv.style.display = "block";
                 setTimeout(() => {
                     loadingIndicator.classList.remove("show"); // Hide loading indicator with fade-out effect even on error
                 }, 500); // Adjust timing if needed
@@ -67,7 +69,7 @@ document.addEventListener("DOMContentLoaded", async function () {
             const favoriteCell = document.createElement("td");
             const favoriteStar = document.createElement("span");
             favoriteStar.classList.add("favorite-star");
-            favoriteStar.textContent = "☆";
+            favoriteStar.textContent = favoriteJobs.has(job.Job_ID) ? "★" : "☆";
             favoriteStar.onclick = function () {
                 toggleFavorite(job, favoriteStar);
             };
@@ -86,12 +88,11 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Function to filter job data based on search input
     function filterJobs() {
-        const query = searchInput.value.trim();
+        const query = searchInput.value.trim().toLowerCase();
         let filteredData;
-        
+
         if (query.includes(":")) {
-            const [key, value] = query.split(":").map((part) => part.trim());
-            console.log(key,value)
+            const [key, value] = query.split(":").map((part) => part.trim().toLowerCase());
             filteredData = jobData.filter((job) => (job[key] || "").toLowerCase().includes(value));
         } else {
             filteredData = jobData.filter((job) =>
@@ -104,22 +105,14 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Function to toggle favorite jobs
     function toggleFavorite(job, element) {
-        if (favoriteJob && favoriteJob.Job_ID === job.Job_ID) {
-            // Unset favorite if the job is already the favorite
-            favoriteJob = null;
+        if (favoriteJobs.has(job.Job_ID)) {
+            // Remove from favorites
+            favoriteJobs.delete(job.Job_ID);
             element.textContent = "☆";
             element.classList.remove("favorite");
         } else {
-            // Set the new favorite
-            if (favoriteJob) {
-                // Unset the previous favorite
-                const previousFavoriteElement = document.querySelector(".favorite-star.favorite");
-                if (previousFavoriteElement) {
-                    previousFavoriteElement.textContent = "☆";
-                    previousFavoriteElement.classList.remove("favorite");
-                }
-            }
-            favoriteJob = job;
+            // Add to favorites
+            favoriteJobs.add(job.Job_ID);
             element.textContent = "★";
             element.classList.add("favorite");
         }
@@ -129,15 +122,15 @@ document.addEventListener("DOMContentLoaded", async function () {
 
     // Function to submit favorite jobs to backend
     function submitFavorites() {
-        const listId = 1; // 假设当前用户的ID为1，实际应用中应从用户会话或认证中获取
-        const favoriteJobId = favoriteJob ? favoriteJob.Job_ID : null;
+        const listId = session['user_id']; // 从用户会话或认证中获取当前用户的ID
+        const favoriteJobIds = Array.from(favoriteJobs);
 
         fetch("/api_save_favorite", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
-            body: JSON.stringify({ List_ID: listId, Job_ID: favoriteJobId })
+            body: JSON.stringify({ List_ID: listId, Job_IDs: favoriteJobIds })
         })
             .then(response => response.json())
             .then(data => {

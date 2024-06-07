@@ -75,11 +75,10 @@ def api_login():
         conn.close()
 
         if user:
-            session['user_id'] = user['User_ID']  # 將 user_id 存入 session
-            # session.permanent = True
+            session['user_id'] = user['User_ID']
             return jsonify({'message': 'Login successful'})
         else:
-            return jsonify({'error': 'User not found or password incorrect'}), 401
+            return jsonify({'error': 'User not found or Password incorrect'}), 401
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
 
@@ -90,20 +89,23 @@ def api_logout():
 
 @app.route('/api_save_favorite', methods=['POST'])
 def api_save_favorite():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
     try:
-        if 'user_id' not in session:
-            return jsonify({'error': 'Unauthorized'}), 401
-        
         data = request.get_json()
-        list_id = data.get('List_ID')
-        list_title = ''
-        favorite_jobs = data.get('Job_ID')
+        list_id = session['user_id']
+        delete_jobs = data.get('delete', [])
+        insert_jobs = data.get('insert', [])
         
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("DELETE FROM List WHERE List_ID = %s", (list_id,))
-        cursor.execute("INSERT INTO List (List_ID, List_title, Job_ID) VALUES (%s, %s, %s)", 
-                       (list_id, list_title, favorite_jobs))
+        if delete_jobs:
+            for job_id in delete_jobs:
+                cursor.execute("DELETE FROM List WHERE List_ID = %s AND Job_ID = %s",(list_id, job_id))
+        if insert_jobs:
+            for job_id in insert_jobs:
+                cursor.execute("INSERT INTO List (List_ID, Job_ID) VALUES (%s, %s, %s)", 
+                       (list_id, job_id))
         conn.commit()
         cursor.close()
         conn.close()
@@ -114,26 +116,41 @@ def api_save_favorite():
     
 @app.route('/api_submit_resume', methods=['POST'])
 def api_submit_resume():
-    try:
-        if 'user_id' not in session:
+    if 'user_id' not in session:
             return jsonify({'error': 'Unauthorized'}), 401
-        
+    
+    try:
         data = request.get_json()
-        resume_id = data.get('resume_id')
-        name = data.get('name')
+        resume_id = session['user_id']
         sex = data.get('sex')
         education = data.get('education')
         phone = data.get('phone')
         identify_id = data.get('identify_id')
         birth = data.get('birth')
-        email = data.get('email')
-        experience = data.get('experience')
+        experience1 = data.get('experience1')
+        experience2 = data.get('experience2')
+        experience3 = data.get('experience3')
         introduction = data.get('introduction')
 
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO Resume (Resume_ID, Name, Sex, Education, Phone, Identify_ID, Birth, Email, Experience, Introduction) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                       (resume_id, name, sex, education, phone, identify_id, birth, email, experience, introduction))
+        cursor.execute("""
+            UPDATE Resume
+            SET 
+                Sex = %s,
+                Education = %s,
+                Phone = %s,
+                Identify_ID = %s,
+                Birth = %s,
+                Experience_1 = %s,
+                Experience_2 = %s,
+                Experience_3 = %s,
+                Introduction = %s
+            WHERE 
+                Resume_ID = %s;
+        """,
+        (sex, education, phone, identify_id, birth, experience1, experience2, experience3, introduction, resume_id))
+        
         conn.commit()
         cursor.close()
         conn.close()
@@ -146,16 +163,14 @@ def api_submit_resume():
 def api_register():
     try:
         data = request.get_json()
-        user_id = data.get('user_id')
         name = data.get('name')
         email = data.get('email')
         password = data.get('password')
-        phone = data.get('phone')
         
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO user (User_ID, Name, Email, Password, Phone) VALUES (%s, %s, %s, %s, %s)", 
-                       (user_id, name, email, password, phone))
+        cursor.execute("INSERT INTO user ( Name, Email, Password) VALUES (%s, %s, %s)", 
+                       (name, email, password))
         conn.commit()
         cursor.close()
         conn.close()
@@ -166,13 +181,33 @@ def api_register():
 
 @app.route('/api_get_jobs', methods=['GET'])
 def api_get_jobs():
-    try:
-        if 'user_id' not in session:
-            return jsonify({'error': 'Unauthorized'}), 401
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
 
+    try:
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
-        cursor.execute("SELECT * FROM Job")
+        cursor.execute = ("""
+            SELECT 
+                Job.Job_title,
+                Job.Salary,
+                Job.Content,
+                Job.Job_Address,
+                Job.Payment,
+                Job.Paydate,
+                Job.Quantity,
+                Job.Contact,
+                Job.Phone,
+                Category_about_Job.Category_content AS Category,
+                Working_Hours_about_Job.Working_Hours_content AS Working_Hours,
+                Job.Job_State
+            FROM 
+                Job 
+            LEFT JOIN 
+                Working_Hours_about_Job ON Job.Working_Hours_Num = Working_Hours_about_Job.Serial_Number 
+            LEFT JOIN 
+                Category_about_Job ON Job.Category_Num = Category_about_Job.Serial_Number;
+        """)
         results = cursor.fetchall()
         cursor.close()
         conn.close()
@@ -180,44 +215,74 @@ def api_get_jobs():
         jobs = []
         for row in results:
             job = {
-                'Job_ID': row[0],
-                'Job_title': row[1],
-                'Salary': row[2],
-                'Content': row[3],
-                'Address': row[4],
-                'Payment': row[5],
-                'Paydate': row[6],
-                'Quantity': row[7],
-                'Contact': row[8],
-                'Phone': row[9],
-                'Category': row[10],
-                'Hours': row[11]
+                'Job_title': row[0],
+                'Salary': row[1],
+                'Content': row[2],
+                'Address': row[3],
+                'Payment': row[4],
+                'Paydate': row[5],
+                'Quantity': row[6],
+                'Contact': row[7],
+                'Phone': row[8],
+                'Category': row[9],
+                'Hours': row[10],
+                'Job_State': row[11]
             }
             jobs.append(job)
 
         return jsonify(jobs)
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
-
-@app.route('/api_get_user_info', methods=['GET'])
-def api_get_user_info():
-    try:
-        if 'user_id' not in session:
+    
+@app.route('/api_get_resume', methods=['GET'])
+def api_get_resume():
+    if 'user_id' not in session:
             return jsonify({'error': 'Unauthorized'}), 401
-        
+
+    try:      
         user_id = session['user_id']
-        
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT Name, Email, Phone FROM user WHERE User_ID = %s", (user_id,))
-        user_info = cursor.fetchone()
+        cursor.execute("""
+            SELECT 
+                User_Name,
+                Email,
+                Sex,
+                Education,
+                Phone,
+                Identify_ID,
+                Birth,
+                Experience_1,
+                Experience_2,
+                Experience_3,
+                Introduction
+            FROM
+                Resume INNER JOIN User ON Resume_ID = %s;
+            """,(user_id))
+        results = cursor.fetchone()
         cursor.close()
         conn.close()
 
-        if user_info:
-            return jsonify(user_info)
+        resume_info = []
+        for row in results:
+            info = {
+                'User_Name': row[0],
+                'Email': row[1],
+                'Sex': row[2],
+                'Education': row[3],
+                'Phone': row[4],
+                'Identify_ID': row[5],
+                'Birth': row[6],
+                'Experience_1': row[7],
+                'Experience_2': row[8],
+                'Experience_3': row[9],
+                'Introduction': row[10]
+            }
+            resume_info.append(info)
+        if resume_info:
+            return jsonify(resume_info)
         else:
-            return jsonify({'error': 'User not found'}), 404
+            return jsonify({'error': 'resume not found'}), 404
     except mysql.connector.Error as err:
         return jsonify({'error': str(err)}), 500
 
