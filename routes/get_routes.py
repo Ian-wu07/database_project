@@ -22,6 +22,23 @@ def api_logout():
         return jsonify({'message': 'Logout successful'})
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+    
+@get_routes.route('/api_get_users', methods=['GET'])
+def api_get_users():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    try:
+        conn = mysql.connector.connect(**db_config)
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM user")
+        users = cursor.fetchall()
+        cursor.close()
+        conn.close()
+
+        return jsonify(users)
+    except mysql.connector.Error as err:
+        return jsonify({'error': str(err)}), 500
 
 @get_routes.route('/api_get_jobs', methods=['GET'])
 def api_get_jobs():

@@ -14,9 +14,9 @@
         <form id="login-form" class="form-container">
             <div class="form-group">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username" required>
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
+                <input type="text" id="username" name="username" autocomplete="username" required>
+                <label for="cpassword">Password:</label>
+                <input type="password" id="password" name="password" autocomplete="current-password" required>
             </div>
             <button type="submit">Login</button>
             <div id="error-message" class="error-message"></div>

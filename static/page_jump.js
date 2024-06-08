@@ -32,3 +32,11 @@ function gotoResume() {
 function backtoHome() {
 	window.location.href = "/home";
 }
+
+function gotoManage_job() {
+    window.location.href = "/manage";
+}
+
+function gotoManage_user() {
+    window.location.href = "/manage_user";
+}

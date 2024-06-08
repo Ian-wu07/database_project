@@ -19,7 +19,10 @@ let favoriteJobs = new Set();
 document.addEventListener("DOMContentLoaded", async function () {
 	const messageDiv = document.getElementById("error-message");
 	const refreshButton = document.getElementById("refresh-button");
-	const searchInput = document.getElementById("search-input");
+	const searchButton = document.getElementById("search-button");
+    const categoryFilter = document.getElementById("category-filter");
+    const salaryFilter = document.getElementById("salary-filter");
+    const loadingIndicator = document.getElementById("loading-indicator");
 
 	let login_status = await checkLogin();
 	if (!login_status) {
@@ -27,6 +30,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 		return;
 	}
 
+	loadingIndicator.classList.add("show");
 	// Initial fetch to populate table on page load
 	await fetch("/api_get_favorite")
 		.then((response) => response.json())
@@ -40,17 +44,19 @@ document.addEventListener("DOMContentLoaded", async function () {
 	fetchJobs();
 
 	refreshButton.addEventListener("click", function () {
+        loadingIndicator.classList.add("show");
         fetchJobs();
         submit_favorites();
     });
-	searchInput.addEventListener("input", filterJobs);
+	searchButton.addEventListener("click", filterJobs);
+    categoryFilter.addEventListener("change", filterJobs);
+    salaryFilter.addEventListener("change", filterJobs);
 });
 
 // 抓取職缺資料
 function fetchJobs() {
 	const loadingIndicator = document.getElementById("loading-indicator");
 	const messageDiv = document.getElementById("error-message");
-	loadingIndicator.classList.add("show");
 
 	fetch("/api_get_jobs")
 		.then((response) => response.json())
@@ -152,7 +158,12 @@ function submit_favorites() {
 
 // Function to filter job data based on search input
 function filterJobs() {
+    const searchInput = document.getElementById("search-input");
+    const categoryFilter = document.getElementById("category-filter");
+    const salaryFilter = document.getElementById("salary-filter");
 	const query = searchInput.value.trim();
+    const selectedCategory = categoryFilter.value.toLowerCase();
+    const selectedSalary = salaryFilter.value.toLowerCase();
 	let filteredData;
 
 	if (query.includes(":")) {
@@ -164,5 +175,16 @@ function filterJobs() {
 		);
 	}
 
+    if (selectedCategory) {
+        filteredData = filteredData.filter(job => (job["Category"] || "").toLowerCase() === selectedCategory);
+    }
+
+    if (selectedSalary) {
+        const [minSalary, maxSalary] = selectedSalary.split("-").map(Number);
+        filteredData = filteredData.filter(job => {
+            const salary = Number(job["Salary"]);
+            return salary >= minSalary && salary <= maxSalary;
+        });
+    }
 	updateTable(filteredData);
 }

@@ -16,15 +16,20 @@ document.addEventListener('DOMContentLoaded', function() {
                 password: password
             })
         })
-        .then(response => {
-            if (response.ok) {
-                // 登录成功，跳转到其他页面
-                window.location.href = '/home';
+        .then((response)=> {
+            console.log(response);
+            if(!response.ok){
+                errorMessage.textContent = "帳號或密碼輸入錯誤";
+                return Promise.resolve(0);
+            }
+            return response.json();
+        })
+        .then((data) => {
+            console.log(data);
+            if (data.redirect_to) {
+                window.location.href = data.redirect_to;
             } else {
-                // 登录失败，显示错误消息
-                response.json().then(data => {
-                    errorMessage.textContent = data.error;
-                });
+                console.error('No redirect URL found in the response:', data);
             }
         })
         .catch(error => {

@@ -4,7 +4,7 @@
 		<title>Job List</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
 		<script src="{{ url_for('static', filename='home.js') }}"></script>
-        <script src="{{ url_for('static', filename='page_jump.js') }}"></script>
+		<script src="{{ url_for('static', filename='page_jump.js') }}"></script>
 	</head>
 	<body>
 		<header>
@@ -16,14 +16,37 @@
 		</header>
 		<main>
 			<h2>Job List</h2>
-			<div id="error-message" class="error-message" style="display: none;">
+			<div id="error-message" class="error-message" style="display: none">
 				<a href="/login">請先登入</a>
 			</div>
-			<input
-				type="text"
-				id="search-input"
-				placeholder="Search by key:value(欄位:內容) or job title"
-			/>
+			<div class="search-container">
+				<input
+					type="text"
+					id="search-input"
+					placeholder="Search by key:value(欄位:內容) or job title"
+				/>
+				<button id="search-button">Search</button>
+			</div>
+			<div id="filter-options">
+				<div>
+					<label for="category-filter">Category:</label>
+					<select id="category-filter">
+						<option value="">All</option>
+						<option value="餐飲">餐飲</option>
+						<option value="人力">人力</option>
+						<option value="門市">門市</option>
+					</select>
+				</div>
+				<div>
+					<label for="salary-filter">Salary:</label>
+					<select id="salary-filter">
+						<option value="">All</option>
+						<option value="0-20000">0 - 20,000</option>
+						<option value="20001-40000">20,001 - 40,000</option>
+						<option value="40001-60000">40,001 - 60,000</option>
+					</select>
+				</div>
+			</div>
 			<div id="loading-indicator">Loading...</div>
 			<table border="5" id="job-table">
 				<thead>

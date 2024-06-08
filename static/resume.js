@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             const value = element.value;
             resumeData[item] = value;
 		})
-        console.log(resumeData,'1')
+        console.log(resumeData)
 		fetch("/api_submit_resume", {
 			method: "POST",
 			headers: {

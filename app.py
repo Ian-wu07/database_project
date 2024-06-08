@@ -49,5 +49,13 @@ def home():
 def resume():
         return render_template('resume.html')
 
+@app.route('/manage')
+def manage():
+        return render_template('manage.html')
+
+@app.route('/manage_user')
+def manage_user():
+        return render_template('manage_user.html')
+
 if __name__ == '__main__':
     app.run(debug=True)
