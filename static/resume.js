@@ -39,11 +39,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 				});
 			}
 		})
-		.catch((error) => console.error("Error:", error));
-
-    setTimeout(() => {  
-        loadingIndicator.classList.remove("show"); // Hide loading indicator with fade-out effect even on error
-    }, 500);
+		.catch((error) => console.error("Error:", error))
+        .finally(() => {
+            setTimeout(() => {  
+                loadingIndicator.classList.remove("show"); // Hide loading indicator with fade-out effect even on error
+            }, 500);
+        });
 
 	form.addEventListener("submit", function (event) {
 		event.preventDefault();
