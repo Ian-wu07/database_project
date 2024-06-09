@@ -45,6 +45,10 @@ def api_register():
         
         conn = mysql.connector.connect(**db_config)
         cursor = conn.cursor()
+        cursor.execute("SELECT * FROM User WHERE User_Name = %s", (name,))
+        user = cursor.fetchone()
+        if user:
+            return jsonify({'error': 'User already exists'}), 409
         cursor.execute("INSERT INTO User (User_Name, Email, User_Password) VALUES (%s, %s, %s)", (name, email, password))
         conn.commit()
         cursor.close()

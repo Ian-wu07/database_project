@@ -4,11 +4,24 @@ document.addEventListener("DOMContentLoaded", function () {
 		event.preventDefault();
 		const name = document.getElementById("name").value;
 		const email = document.getElementById("email").value;
-		const password = document.getElementById("password").value;
-        const password_confirm = document.getElementById("password_confirm").value;
+		const password = document.getElementById("password");
+        const password_confirm = document.getElementById("password_confirm");
         const errorMessage = document.getElementById('error-message');
-        if(password !== password_confirm){
+
+        password.addEventListener('paste', function(event) {
+            event.preventDefault();
+        });
+        password_confirm.addEventListener('paste', function(event) {
+            event.preventDefault();
+        });
+
+        errorMessage.textContent = "";
+        password.style.border = "";
+        password_confirm.style.border = "";
+        if(password.value !== password_confirm.value){
             errorMessage.textContent = "密碼不一致";
+            password.style.border = "3px solid red";
+            password_confirm.style.border = "3px solid red";
             return;
         }
 		fetch("/api_register", {
@@ -19,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			body: JSON.stringify({
 				name: name,
 				email: email,
-				password: password,
+				password: password.value,
 			}),
 		})
             .then(response => {
@@ -33,6 +46,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     // 登录失败，显示错误消息
                     response.json().then(data => {
+                        errorMessage.textContent = data.error;
                         alert(data.error);
                     });
                 }

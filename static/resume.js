@@ -1,15 +1,15 @@
 const displayOrder = [
-    "User_Name",
-    "Email",
-    "Sex",
-    "Education",
-    "Phone",
-    "Identify_ID",
-    "Birth",
-    "Experience_1",
-    "Experience_2",
-    "Experience_3",
-    "Introduction"
+	"User_Name",
+	"Email",
+	"Sex",
+	"Education",
+	"Phone",
+	"Identify_ID",
+	"Birth",
+	"Experience_1",
+	"Experience_2",
+	"Experience_3",
+	"Introduction",
 ];
 let resumeData = {};
 document.addEventListener("DOMContentLoaded", async () => {
@@ -29,22 +29,33 @@ document.addEventListener("DOMContentLoaded", async () => {
 			if (data.error) {
 				console.error("Error:", data.error);
 			} else {
-                resumeData=data[0]
-				displayOrder.forEach((item) => {            
+				resumeData = data[0];
+				displayOrder.forEach((item) => {
 					document.getElementById(item.toLocaleLowerCase()).value = resumeData[item];
-				})
+				});
 			}
 		})
 		.catch((error) => console.error("Error:", error));
 
 	form.addEventListener("submit", function (event) {
-		event.preventDefault(); // 防止表單提交時重整頁面
+		event.preventDefault();
+
+		let isValid = true;
+
 		displayOrder.forEach((item) => {
-            const element = document.getElementById(item.toLocaleLowerCase());
-            const value = element.value;
-            resumeData[item] = value;
-		})
-        console.log(resumeData)
+			const element = document.getElementById(item.toLocaleLowerCase());
+			const value = element.value;
+			resumeData[item] = value;
+		});
+
+        if (!isValid) {
+			errorMessage.style.display = "block";
+			errorMessage.textContent = "Please fill in all required fields.";
+			errorMessage.style.color = "red";
+			return;
+		}
+
+		// console.log(resumeData);
 		fetch("/api_submit_resume", {
 			method: "POST",
 			headers: {

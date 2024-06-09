@@ -13,7 +13,7 @@ app = Flask(__name__)
 app.secret_key = '123'
 app.config['SESSION_TYPE'] = 'filesystem'  # 使用文件系統來存儲 session
 app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(hours=1)
-app.config['SESSION_FILE_DIR'] = './flask_session/'
+app.config['SESSION_FILE_DIR'] = '/tmp/some_folder'
 # 初始化 Session
 Session(app)
 
@@ -48,6 +48,10 @@ def home():
 @app.route('/resume')
 def resume():
         return render_template('resume.html')
+
+@app.route('/favorite')
+def favorite():
+        return render_template('favorite.html')
 
 @app.route('/manage')
 def manage():

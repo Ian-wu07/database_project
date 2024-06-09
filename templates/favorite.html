@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Job List</title>
+		<title>Favorite Job List</title>
 		<link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-		<script src="{{ url_for('static', filename='home.js') }}"></script>
+		<script src="{{ url_for('static', filename='favorite.js') }}"></script>
 		<script src="{{ url_for('static', filename='page_jump.js') }}"></script>
 	</head>
 	<body>
 		<header>
 			<h1>求職打工系統</h1>
 			<div class="button-container">
-				<button id="logout-button" onclick="logout()" class="left-up-button">Logout</button>
-				<button id="goto-resume-button" onclick="gotoResume()" class="left_up-button">Write Resume</button>
-                <button id="goto-favorite-button" onclick="gotoFavorite()" class="left_up-button">See Favorite</button>
+				<button onclick="logout()" class="left-up-button">Logout</button>
+				<button onclick="gotoResume()" class="left_up-button">Write Resume</button>
+                <button onclick="backtoHome()" class="left_up-button">back to home</button>
 			</div>
 		</header>
 		<main>
-			<h2>Job List</h2>
+			<h2>Favorite Job List</h2>
 			<div id="error-message" class="error-message" style="display: none">
 				<a href="/login">請先登入</a>
 			</div>
@@ -49,7 +49,6 @@
 				</div>
 			</div>
 			<div id="loading-indicator">Loading...</div>
-            <p class="notice">紅色為暫時未開放的工作。</p>
 			<table border="5" id="job-table">
 				<thead>
 					<tr>
