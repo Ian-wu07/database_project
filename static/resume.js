@@ -14,6 +14,7 @@ const displayOrder = [
 let resumeData = {};
 document.addEventListener("DOMContentLoaded", async () => {
 	const errorMessage = document.getElementById("error-message");
+    const loadingIndicator = document.getElementById("loading-indicator");
 	const form = document.getElementById("resume-form");
 
 	let log_In = await checkLogin();
@@ -23,11 +24,14 @@ document.addEventListener("DOMContentLoaded", async () => {
 		return;
 	}
 
+    loadingIndicator.classList.add("show");
 	fetch("/api_get_resume")
 		.then((response) => response.json())
 		.then((data) => {
 			if (data.error) {
 				console.error("Error:", data.error);
+                errorMessage.style.display = "block";
+                errorMessage.textContent = data.error;
 			} else {
 				resumeData = data[0];
 				displayOrder.forEach((item) => {
@@ -36,6 +40,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 			}
 		})
 		.catch((error) => console.error("Error:", error));
+
+    setTimeout(() => {  
+        loadingIndicator.classList.remove("show"); // Hide loading indicator with fade-out effect even on error
+    }, 500);
 
 	form.addEventListener("submit", function (event) {
 		event.preventDefault();
@@ -55,6 +63,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 			return;
 		}
 
+        loadingIndicator.classList.add("show");
 		// console.log(resumeData);
 		fetch("/api_submit_resume", {
 			method: "POST",
@@ -81,5 +90,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 			.catch((error) => {
 				console.error("Error:", error);
 			});
+
+            setTimeout(() => {
+                loadingIndicator.classList.remove("show"); // Hide loading indicator with fade-out effect even on error
+            }, 500);
 	});
 });
