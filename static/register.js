@@ -33,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 } else {
                     // 登录失败，显示错误消息
                     response.json().then(data => {
+                        errorMessage.textContent = data.error;
                         alert(data.error);
                     });
                 }

@@ -29,6 +29,10 @@ function gotoResume() {
 	window.location.href = "/resume";
 }
 
+function gotoFavorite() {
+    window.location.href = "/favorite";
+}
+
 function backtoHome() {
 	window.location.href = "/home";
 }

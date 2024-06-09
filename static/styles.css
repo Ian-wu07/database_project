@@ -127,6 +127,11 @@ a:hover {
     background-color: #f2f2f2;
 }
 
+#job-table tbody tr.job-inactive{
+    background-color: #f8d7da; /* 使用 Bootstrap 紅色警告背景色 */
+}
+
+
 /* 表格內按鈕樣式 */
 #job-table button,
 #user-table button {
@@ -151,6 +156,7 @@ select {
     border-radius: 4px;
     box-sizing: border-box;
 }
+
 
 /* ----按鈕樣式---- */
 button {
@@ -299,3 +305,4 @@ button.edit-button:hover {
 #search-button {
     max-width: 100px;
 }
+

@@ -49,6 +49,10 @@ def home():
 def resume():
         return render_template('resume.html')
 
+@app.route('/favorite')
+def favorite():
+        return render_template('favorite.html')
+
 @app.route('/manage')
 def manage():
         return render_template('manage.html')

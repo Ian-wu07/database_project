@@ -41,37 +41,26 @@ document.addEventListener("DOMContentLoaded", async function () {
 		.catch((error) => {
 			console.error("Error fetching favorites:", error);
 		});
-	fetchJobs();
+	fetchFavorites();
 
 	refreshButton.addEventListener("click", function () {
         loadingIndicator.classList.add("show");
+        fetchFavorites();
         submit_favorites();
-        fetchJobs();
     });
 	searchButton.addEventListener("click", filterJobs);
     categoryFilter.addEventListener("change", filterJobs);
     salaryFilter.addEventListener("change", filterJobs);
-
-    const gotoResumeButton = document.getElementById("goto-resume-button");
-    gotoResumeButton.addEventListener("click", function () {
-        submit_favorites();
-        gotoResume();
-    });
-    const gotoFavoriteButton = document.getElementById("goto-favorite-button");
-    gotoFavoriteButton.addEventListener("click", function () {
-        submit_favorites();
-        gotoFavorite();
-    });
 });
 
 // 抓取職缺資料
-function fetchJobs() {
+function fetchFavorites() {
 	const loadingIndicator = document.getElementById("loading-indicator");
 	const messageDiv = document.getElementById("error-message");
-    
+
     loadingIndicator.classList.add("show");
 
-	fetch("/api_get_jobs")
+	fetch("/api_get_favorite")
 		.then((response) => response.json())
 		.then((data) => {
 			jobData = data; // Store fetched data
@@ -94,43 +83,37 @@ function fetchJobs() {
 
 // Function to update table with job data
 function updateTable(data) {
-    const jobTableBody = document.getElementById("job-table-body");
-    jobTableBody.innerHTML = ""; // Clear existing table data
+	const jobTableBody = document.getElementById("job-table-body");
+	jobTableBody.innerHTML = ""; // Clear existing table data
 
-    data.forEach((job) => {
-        const row = document.createElement("tr");
-        row.classList.add(job.Job_State === 0 ? "job-inactive" : "job-active"); // Add class based on Job_State
+	data.forEach((job) => {
+		const row = document.createElement("tr");
+		displayOrder.forEach((key) => {
+			const cell = document.createElement("td");
+			cell.textContent = job[key] || "";
+			row.appendChild(cell);
+		});
 
-        displayOrder.forEach((key) => {
-            const cell = document.createElement("td");
-            cell.textContent = job[key] || "";
-            row.appendChild(cell);
-        });
-
-        // Add favorite star cell
-        const favoriteCell = document.createElement("td");
-        const favoriteStar = document.createElement("span");
+		// Add favorite star cell
+		const favoriteCell = document.createElement("td");
+		const favoriteStar = document.createElement("span");
         favoriteStar.classList.add("favorite-star");
-        if(job.Job_State === 0) {
-            favoriteStar.textContent = "";
-        }
-        else if (favoriteJobs.has(job.Job_ID)) {
+		if (favoriteJobs.has(job.Job_ID)) {
             favoriteStar.textContent = "★";
             favoriteStar.classList.add("favorite");
 
         } else {
             favoriteStar.textContent = "☆";
         }
-        favoriteStar.onclick = function () {
-            toggleFavorite(job, favoriteStar);
-        };
-        favoriteCell.appendChild(favoriteStar);
-        row.appendChild(favoriteCell);
+		favoriteStar.onclick = function () {
+			toggleFavorite(job, favoriteStar);
+		};
+		favoriteCell.appendChild(favoriteStar);
+		row.appendChild(favoriteCell);
 
-        jobTableBody.appendChild(row);
-    });
+		jobTableBody.appendChild(row);
+	});
 }
-
 
 // Function to toggle favorite jobs
 function toggleFavorite(job, element) {
