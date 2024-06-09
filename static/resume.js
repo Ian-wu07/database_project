@@ -13,12 +13,12 @@ const displayOrder = [
 ];
 let resumeData = {};
 document.addEventListener("DOMContentLoaded", async () => {
-	const messageDiv = document.getElementById("error-message");
+	const errorMessage = document.getElementById("error-message");
 	const form = document.getElementById("resume-form");
 
 	let log_In = await checkLogin();
 	if (!log_In) {
-		messageDiv.style.display = "block";
+        errorMessage.style.display = "block";
 		form.style.display = "none";
 		return;
 	}
@@ -66,8 +66,15 @@ document.addEventListener("DOMContentLoaded", async () => {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.message) {
+                    errorMessage.style.display = "block";
+                    errorMessage.textContent = "Resume submitted successfully";
+                    errorMessage.style.color = "green";
 					alert("Resume submitted successfully");
+
 				} else if (data.error) {
+                    errorMessage.style.display = "block";
+                    errorMessage.textContent =  data.error;
+                    errorMessage.style.color = "red";
 					alert("Error: " + data.error);
 				}
 			})

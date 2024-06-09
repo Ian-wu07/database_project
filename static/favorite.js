@@ -44,7 +44,6 @@ document.addEventListener("DOMContentLoaded", async function () {
 	fetchFavorites();
 
 	refreshButton.addEventListener("click", function () {
-        loadingIndicator.classList.add("show");
         fetchFavorites();
         submit_favorites();
     });

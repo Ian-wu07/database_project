@@ -92,6 +92,7 @@ def api_submit_resume():
     try:
         data = request.get_json()
         resume_id = session['user_id']
+        user_name = data.get('User_Name')
         sex = data.get('Sex')
         education = data.get('Education')
         phone = data.get('Phone')
@@ -108,10 +109,11 @@ def api_submit_resume():
         cursor.execute("""
             UPDATE User
             SET 
+                User_Name = %s,
                 Email = %s
             WHERE 
                 User_ID = %s;
-        """, (email, resume_id))
+        """, (user_name,email, resume_id))
 
         cursor.execute("""
             UPDATE Resume
