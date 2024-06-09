@@ -2,3 +2,4 @@ Flask==2.2.2
 Flask-Session==0.8.0
 mysql-connector-python==8.4.0
 Werkzeug==2.2.2
+gunicorn
