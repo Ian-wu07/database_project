@@ -66,10 +66,18 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 // 抓取職缺資料
 function fetchJobs() {
+    const searchInput = document.getElementById("search-input");
+    const categoryFilter = document.getElementById("category-filter");
+    const salaryFilter = document.getElementById("salary-filter");
 	const loadingIndicator = document.getElementById("loading-indicator");
 	const messageDiv = document.getElementById("error-message");
     
     loadingIndicator.classList.add("show");
+    messageDiv.style.display = "none";
+
+    searchInput.value = "";
+    categoryFilter.value = "";
+    salaryFilter.value = "";
 
 	fetch("/api_get_jobs")
 		.then((response) => response.json())
@@ -145,10 +153,12 @@ function toggleFavorite(job, element) {
 		element.textContent = "★";
 		element.classList.add("favorite");
 	}
-    console.log(favoriteJobs);
+    // console.log(favoriteJobs);
 }
 
 function submit_favorites() {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.style.display = "none";
 	//比較set的資料，last出現但是現在消失的代表要刪除，現在出現但是last沒有的代表要新增
 	const newFavoriteIds = Array.from(favoriteJobs).filter((id) => !last_favoriteJobs.has(id));
 	const removedFavoriteIds = Array.from(last_favoriteJobs).filter((id) => !favoriteJobs.has(id));
@@ -168,6 +178,9 @@ function submit_favorites() {
 		.then((response) => response.json())
 		.then((data) => {
 			console.log("Favorite jobs saved successfully:", data);
+            errorMessage.style.display = "block";
+            errorMessage.style.color = "green";
+            errorMessage.textContent = "Favorite jobs saved successfully";
 			last_favoriteJobs = new Set(favoriteJobs);
 		})
 		.catch((error) => {

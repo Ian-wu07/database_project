@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
         const errorMessage = document.getElementById('error-message');
-
+        
         fetch('/api_login', {
             method: 'POST',
             headers: {

@@ -88,6 +88,8 @@ function updateTable(data) {
 
 	data.forEach((job) => {
 		const row = document.createElement("tr");
+        row.classList.add(job.Job_State === 0 ? "job-inactive" : "job-active"); // Add class based on Job_State
+
 		displayOrder.forEach((key) => {
 			const cell = document.createElement("td");
 			cell.textContent = job[key] || "";
@@ -128,10 +130,12 @@ function toggleFavorite(job, element) {
 		element.textContent = "★";
 		element.classList.add("favorite");
 	}
-    console.log(favoriteJobs);
+    // console.log(favoriteJobs);
 }
 
 function submit_favorites() {
+    const errorMessage = document.getElementById("error-message");
+    errorMessage.style.display = "none";
 	//比較set的資料，last出現但是現在消失的代表要刪除，現在出現但是last沒有的代表要新增
 	const newFavoriteIds = Array.from(favoriteJobs).filter((id) => !last_favoriteJobs.has(id));
 	const removedFavoriteIds = Array.from(last_favoriteJobs).filter((id) => !favoriteJobs.has(id));
@@ -151,6 +155,9 @@ function submit_favorites() {
 		.then((response) => response.json())
 		.then((data) => {
 			console.log("Favorite jobs saved successfully:", data);
+            errorMessage.style.display = "block";
+            errorMessage.style.color = "green";
+            errorMessage.textContent = "Favorite jobs saved successfully";
 			last_favoriteJobs = new Set(favoriteJobs);
 		})
 		.catch((error) => {
