@@ -183,7 +183,7 @@ function filterJobs() {
         const [minSalary, maxSalary] = selectedSalary.split("-").map(Number);
         filteredData = filteredData.filter(job => {
             const salary = Number(job["Salary"]);
-            return salary >= minSalary && salary <= maxSalary;
+            return salary >= minSalary && (salary <= maxSalary || !maxSalary);
         });
     }
 	updateTable(filteredData);
