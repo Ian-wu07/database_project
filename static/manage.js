@@ -72,8 +72,8 @@ function fetch_jobs() {
 		})
 		.finally(() => {
 			setTimeout(() => {
-                loadingIndicator.classList.remove("show");
-            }, 500);  // 500 毫秒延遲
+				loadingIndicator.classList.remove("show");
+			}, 500); // 500 毫秒延遲
 		});
 }
 
@@ -88,10 +88,43 @@ function update_table(data) {
 	const newRow = document.createElement("tr");
 	displayOrder.forEach((key) => {
 		const newCell = document.createElement("td");
-		const input = document.createElement("input");
-		input.type = "text";
+
+		// 創建選單選取框
+		let input;
+		if (key === "Category" || key === "Working_Hours" || key === "Job_State") {
+			input = document.createElement("select");
+
+			// 根據欄位名設置選單選項
+			let options;
+			if (key === "Category") {
+				options = ["人力", "餐飲", "門市", "辦公", "補教", "活動", "其他"]; // 替換為實際選項
+			} else if (key === "Working_Hours") {
+				options = ["早班", "午班", "晚班", "大夜班"]; // 替換為實際選項
+			} else if (key === "Job_State") {
+				options = [1, 0]; // 替換為實際選項
+			}
+
+			options.forEach((optionValue) => {
+				const option = document.createElement("option");
+				option.value = optionValue;
+				option.textContent = optionValue;
+				input.appendChild(option);
+			});
+		} else {
+			input = document.createElement("input");
+			input.type = "text";
+			if (key === "Phone") {
+				input.setAttribute("minlength", "10");
+				input.setAttribute("maxlength", "10");
+				input.setAttribute("size", "10");
+			}
+		}
+
+		// 添加其他屬性
 		input.dataset.key = key;
 		input.required = true;
+
+		// 添加輸入元素到單元格
 		newCell.appendChild(input);
 		newRow.appendChild(newCell);
 	});
@@ -142,10 +175,40 @@ function editJob(row, job) {
 		if (index < displayOrder.length) {
 			const key = cell.dataset.key;
 			const input = document.createElement("input");
-			input.type = "text";
-			input.value = job[key];
-			cell.innerHTML = "";
-			cell.appendChild(input);
+
+			// 如果是 Category、Working_Hours 或 Job_State 欄位，則創建選單選取
+			if (key === "Category" || key === "Working_Hours" || key === "Job_State") {
+				const select = document.createElement("select");
+
+				let options;
+				if (key === "Category") {
+					options = ["人力", "餐飲", "門市", "辦公", "補教", "活動", "其他"]; // 替換為實際選項
+				} else if (key === "Working_Hours") {
+					options = ["早班", "午班", "晚班", "大夜班"]; // 替換為實際選項
+				} else if (key === "Job_State") {
+					options = [1, 0]; // 替換為實際選項
+				}
+
+				options.forEach((optionValue) => {
+					const option = document.createElement("option");
+					option.value = optionValue;
+					option.textContent = optionValue;
+					if (job[key] === optionValue) {
+						option.selected = true;
+					}
+					select.appendChild(option);
+				});
+
+				// 將選單選取添加到單元格中
+				cell.innerHTML = "";
+				cell.appendChild(select);
+			} else {
+				// 否則，創建文本輸入框
+				input.type = "text";
+				input.value = job[key];
+				cell.innerHTML = "";
+				cell.appendChild(input);
+			}
 		}
 	});
 
@@ -167,12 +230,16 @@ function editJob(row, job) {
 
 // 儲存職缺
 function saveJob(row, job) {
-	const inputs = row.querySelectorAll("input");
+	const inputs = row.querySelectorAll("input, select"); // 同時選取輸入框和選單選取框
 	inputs.forEach((input, index) => {
 		const key = displayOrder[index];
-		job[key] = input.value;
+		if (input.tagName === "INPUT") {
+			job[key] = input.value;
+		} else if (input.tagName === "SELECT") {
+			job[key] = input.options[input.selectedIndex].value; // 獲取選擇的值
+		}
 		const cell = input.parentElement;
-		cell.textContent = input.value;
+		cell.textContent = job[key];
 	});
 
 	const actionsCell = row.querySelector("td:last-child");
@@ -244,9 +311,9 @@ function deleteJob(row, job) {
 // 新增職缺
 function addJob(row) {
 	const errorMessage = document.getElementById("error-message");
-	const inputs = row.querySelectorAll("input");
+	const inputs = row.querySelectorAll("input, select"); // 同時選取輸入框和選單選取框
 	const newJob = {};
-
+    // console.log(inputs);
 	let isValid = true;
 	inputs.forEach((input) => {
 		if (!input.value.trim()) {
@@ -255,7 +322,8 @@ function addJob(row) {
 		} else {
 			input.style.border = "";
 			const key = input.dataset.key;
-			newJob[key] = input.value;
+			newJob[key] =
+				input.tagName === "INPUT" ? input.value : input.options[input.selectedIndex].value; // 根據元素類型獲取值
 		}
 	});
 
@@ -265,12 +333,14 @@ function addJob(row) {
 		errorMessage.style.color = "red";
 		return;
 	}
-
-	inputs.forEach((input) => {
-		const key = input.dataset.key;
-		newJob[key] = input.value;
-	});
-
+    if(newJob["Phone"].length != 10){
+        errorMessage.style.display = "block";
+        errorMessage.textContent = "Phone number must be 10 digits.";
+        errorMessage.style.color = "red";
+        inputs[8].style.border = "3px solid red";
+        return;
+    }
+	// 將數值欄位轉換為整數
 	newJob["Salary"] = parseInt(newJob["Salary"]);
 	newJob["Quantity"] = parseInt(newJob["Quantity"]);
 	newJob["Job_State"] = parseInt(newJob["Job_State"]);
