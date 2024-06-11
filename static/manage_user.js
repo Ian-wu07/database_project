@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 	const messageDiv = document.getElementById("error-message");
 	const refreshButton = document.getElementById("refresh-button");
 	const searchButton = document.getElementById("search-button");
-	const loadingIndicator = document.getElementById("loading-indicator");
+
 
 	// 檢查登入狀態
 	let login_status = await checkLogin();
@@ -18,10 +18,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
 	fetchUsers();
 
-	refreshButton.addEventListener("click", function () {
-		loadingIndicator.classList.add("show");
-		fetchUsers();
-	});
+	refreshButton.addEventListener("click", fetchUsers);
 	searchButton.addEventListener("click", filterUsers);
 });
 
@@ -31,28 +28,34 @@ function fetchUsers() {
 	const messageDiv = document.getElementById("error-message");
 
 	loadingIndicator.classList.add("show");
+	messageDiv.classList.remove("show");
 
 	fetch("/api_get_users")
-		.then((response) => response.json())
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok " + response.statusText);
+			}
+			return response.json();
+		})
 		.then((data) => {
 			userData = data;
-			updateTable(userData);
-			setTimeout(() => {
-				loadingIndicator.classList.remove("show");
-			}, 500);
+			update_table(userData);
 		})
 		.catch((error) => {
 			console.error("Error fetching users:", error);
 			messageDiv.textContent = "Error fetching users. Please try again later.";
-			messageDiv.style.display = "block";
-			setTimeout(() => {
-				loadingIndicator.classList.remove("show");
-			}, 500);
+			messageDiv.classList.add("show");
+		})
+		.finally(() => {
+            setTimeout(() => {
+                loadingIndicator.classList.remove("show");
+            }, 500);  // 500 毫秒延遲
 		});
 }
 
+
 // 更新表格顯示使用者資料
-function updateTable(data) {
+function update_table(data) {
 	const errorMessage = document.getElementById("error-message");
 	errorMessage.style.display = "none";
 
@@ -135,7 +138,7 @@ function editUser(row, user) {
 	const cancelButton = document.createElement("button");
 	cancelButton.textContent = "Cancel";
 	cancelButton.classList.add("cancel-button");
-	cancelButton.onclick = () => updateTable(userData);
+	cancelButton.onclick = () => update_table(userData);
 	actionsCell.appendChild(cancelButton);
 }
 
@@ -293,5 +296,5 @@ function filterUsers() {
 		);
 	}
 
-	updateTable(filteredData);
+	update_table(filteredData);
 }

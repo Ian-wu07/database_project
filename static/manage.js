@@ -31,49 +31,54 @@ document.addEventListener("DOMContentLoaded", async function () {
 		return;
 	}
 
-	fetchJobs();
+	fetch_jobs();
 
 	refreshButton.addEventListener("click", function () {
 		loadingIndicator.classList.add("show");
-		fetchJobs();
+		fetch_jobs();
 	});
-	searchButton.addEventListener("click", filterJobs);
-	categoryFilter.addEventListener("change", filterJobs);
-	salaryFilter.addEventListener("change", filterJobs);
+	searchButton.addEventListener("click", filter_jobs);
+	categoryFilter.addEventListener("change", filter_jobs);
+	salaryFilter.addEventListener("change", filter_jobs);
 });
 
 // 抓取職缺資料
-function fetchJobs() {
+function fetch_jobs() {
 	const loadingIndicator = document.getElementById("loading-indicator");
 	const messageDiv = document.getElementById("error-message");
 	const categoryFilter = document.getElementById("category-filter");
 	const salaryFilter = document.getElementById("salary-filter");
 
 	loadingIndicator.classList.add("show");
+	messageDiv.classList.remove("show");
 
 	fetch("/api_get_jobs")
-		.then((response) => response.json())
+		.then((response) => {
+			if (!response.ok) {
+				throw new Error("Network response was not ok " + response.statusText);
+			}
+			return response.json();
+		})
 		.then((data) => {
 			jobData = data;
-			updateTable(jobData);
-			setTimeout(() => {
-				loadingIndicator.classList.remove("show");
-			}, 500);
+			update_table(jobData);
 			categoryFilter.value = "";
 			salaryFilter.value = "";
 		})
 		.catch((error) => {
 			console.error("Error fetching jobs:", error);
 			messageDiv.textContent = "Error fetching jobs. Please try again later.";
-			messageDiv.style.display = "block";
+			messageDiv.classList.add("show");
+		})
+		.finally(() => {
 			setTimeout(() => {
-				loadingIndicator.classList.remove("show");
-			}, 500);
+                loadingIndicator.classList.remove("show");
+            }, 500);  // 500 毫秒延遲
 		});
 }
 
 // 更新表格顯示職缺資料
-function updateTable(data) {
+function update_table(data) {
 	const errorMessage = document.getElementById("error-message");
 	errorMessage.style.display = "none";
 
@@ -156,7 +161,7 @@ function editJob(row, job) {
 	const cancelButton = document.createElement("button");
 	cancelButton.textContent = "Cancel";
 	cancelButton.classList.add("cancel-button");
-	cancelButton.onclick = () => updateTable(jobData);
+	cancelButton.onclick = () => update_table(jobData);
 	actionsCell.appendChild(cancelButton);
 }
 
@@ -186,8 +191,6 @@ function saveJob(row, job) {
 	actionsCell.appendChild(deleteButton);
 
 	const errorMessage = document.getElementById("error-message");
-
-	console.log(job);
 	fetch("/api_change_job", {
 		method: "PUT",
 		headers: {
@@ -293,44 +296,9 @@ function addJob(row) {
 			errorMessage.style.display = "block";
 			errorMessage.textContent = "Job added successfully!";
 			errorMessage.style.color = "green";
-			fetchJobs();
+			fetch_jobs();
 		})
 		.catch((error) => {
 			console.error("Error adding job:", error);
 		});
-}
-
-// 過濾職缺
-function filterJobs() {
-	const searchInput = document.getElementById("search-input");
-	const categoryFilter = document.getElementById("category-filter");
-	const salaryFilter = document.getElementById("salary-filter");
-	const query = searchInput.value.trim();
-	const selectedCategory = categoryFilter.value.toLowerCase();
-	const selectedSalary = salaryFilter.value.toLowerCase();
-	let filteredData;
-
-	if (query.includes(":")) {
-		const [key, value] = query.split(":").map((part) => part.trim());
-		filteredData = jobData.filter((job) => (job[key] || "").toLowerCase().includes(value));
-	} else {
-		filteredData = jobData.filter((job) =>
-			(job["Job_title"] || "").toLowerCase().includes(query)
-		);
-	}
-
-	if (selectedCategory) {
-		filteredData = filteredData.filter(
-			(job) => (job["Category"] || "").toLowerCase() === selectedCategory
-		);
-	}
-
-	if (selectedSalary) {
-		const [minSalary, maxSalary] = selectedSalary.split("-").map(Number);
-		filteredData = filteredData.filter((job) => {
-			const salary = Number(job["Salary"]);
-			return minSalary <= salary && (!maxSalary || salary <= maxSalary);
-		});
-	}
-	updateTable(filteredData);
 }
