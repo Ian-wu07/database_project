@@ -11,17 +11,16 @@
 
 ### Render: https://database-project-djw5.onrender.com
 - 主要網站，順暢度較好
-- 目前可能會有伺服器停機問題
+- 如果太久沒人使用，後面第1個人進入會需要等待約1分鐘
 
 ### Vercel: https://database-project-six.vercel.app/
 - 次要預備網站，較為卡頓，會有丟失cookie的問題，可能需要多次重整網頁
-- 目前似乎可以一直運行
 
 --------------------------------
 --------------------------------
 ## 本機架設
 
-##### 這是一個搭配( HTML + JS + CSS )、Python(Flask)、MySQL的專案
+#### 這是一個搭配( HTML + JS + CSS )、Python(Flask)、MySQL的專案
 
 1. 運行 `pip install -r requirements.txt`
 2. `config.py` 調整 MySQL 的設定
@@ -30,9 +29,12 @@
 
 --------------------------------
 --------------------------------
-## 更新紀錄 (共開發48小時)
+## 更新紀錄 (共開發48小時 + 整理js 2小時)
 
-## 6/10 3:03am 更新
+### 6/11 1:15pm 更新
+- 整理js (部分api function化、顯示修正)
+
+### 6/10 3:03am 更新
 - <span style="color: blue; font-weight: bold; font-size:20px;">伺服器成功架設！！</span> 🎉🎉
 - 修正一些bug (Resume的Name沒有更新到資料庫等等...)
 - 加入輸入規則、提醒
